@@ -33,3 +33,20 @@ properties:
       Initialize the sensor in "force awake" mode. This can also be enabled or
       disabled in runtime by the application using the paw32xx_force_awake()
       API.
+
+  invert-x:
+    type: boolean
+    description: |
+      Invert the X axis reported by the sensor. Use when the sensor is mounted
+      rotated relative to the keyboard.
+
+  invert-y:
+    type: boolean
+    description: |
+      Invert the Y axis reported by the sensor.
+
+  swap-xy:
+    type: boolean
+    description: |
+      Swap the X and Y axes reported by the sensor. Applied before invert-x /
+      invert-y.

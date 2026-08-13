@@ -79,6 +79,13 @@ struct paw32xx_config {
     struct gpio_dt_spec power_gpio;
     int16_t res_cpi;
     bool force_awake;
+    /* センサーの取り付け向きの補正。
+       ZMKのinput processor(zip_xy_transform)では反転が実機に反映されなかったため、
+       ドライバが値を報告する時点で補正できるようにする。
+       pmw3610 ドライバの invert-x / invert-y / swap-xy と同じ意味。 */
+    bool invert_x;
+    bool invert_y;
+    bool swap_xy;
 };
 
 struct paw32xx_data {
@@ -444,6 +451,20 @@ static void paw32xx_motion_work_handler(struct k_work *work) {
 
     LOG_DBG("x=%4d y=%4d", x, y);
 
+    /* センサーの取り付け向きを devicetree の指定で補正してから報告する。
+       swap-xy → invert-x/invert-y の順に適用する（回転させてから反転）。 */
+    if (cfg->swap_xy) {
+        int16_t tmp = x;
+        x = y;
+        y = tmp;
+    }
+    if (cfg->invert_x) {
+        x = -x;
+    }
+    if (cfg->invert_y) {
+        y = -y;
+    }
+
     input_report_rel(data->dev, INPUT_REL_X, x, false, K_FOREVER);
     input_report_rel(data->dev, INPUT_REL_Y, y, true, K_FOREVER);
 
@@ -790,6 +811,9 @@ static int paw32xx_pm_action(const struct device *dev, enum pm_device_action act
         .power_gpio = GPIO_DT_SPEC_INST_GET_OR(n, power_gpios, {0}),                               \
         .res_cpi = DT_INST_PROP_OR(n, res_cpi, -1),                                                \
         .force_awake = DT_INST_PROP(n, force_awake),                                               \
+        .invert_x = DT_INST_PROP(n, invert_x),                                                     \
+        .invert_y = DT_INST_PROP(n, invert_y),                                                     \
+        .swap_xy = DT_INST_PROP(n, swap_xy),                                                       \
     };                                                                                             \
                                                                                                    \
     static struct paw32xx_data paw32xx_data_##n;                                                   \
