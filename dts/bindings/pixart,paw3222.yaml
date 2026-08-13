@@ -50,3 +50,14 @@ properties:
     description: |
       Swap the X and Y axes reported by the sensor. Applied before invert-x /
       invert-y.
+
+  no-invert-x:
+    type: boolean
+    description: |
+      Disable the X axis inversion. In this fork the inversion is enabled by
+      default because torabo-tsuki LP reports both axes reversed.
+
+  no-invert-y:
+    type: boolean
+    description: |
+      Disable the Y axis inversion. See no-invert-x.

@@ -86,6 +86,9 @@ struct paw32xx_config {
     bool invert_x;
     bool invert_y;
     bool swap_xy;
+    /* 既定で反転が有効なので、無効化したいときにこれを立てる */
+    bool no_invert_x;
+    bool no_invert_y;
 };
 
 struct paw32xx_data {
@@ -451,17 +454,28 @@ static void paw32xx_motion_work_handler(struct k_work *work) {
 
     LOG_DBG("x=%4d y=%4d", x, y);
 
-    /* センサーの取り付け向きを devicetree の指定で補正してから報告する。
-       swap-xy → invert-x/invert-y の順に適用する（回転させてから反転）。 */
+    /* センサーの取り付け向きを補正してから報告する。
+       swap-xy → invert-x/invert-y の順に適用する（回転させてから反転）。
+
+       torabo-tsuki LP では上下左右とも反転しているため、このフォークでは
+       invert-x / invert-y の既定値を「有効」にしている。
+       devicetree 側で無効化したい場合は no-invert-x / no-invert-y を指定する。
+
+       ※ config のキーマップは snippet より先に処理されるため、
+         キーマップから &pointing_device を参照して設定することはできない
+         （undefined node label になる）。よってドライバ側を既定値で振る。 */
+    bool inv_x = cfg->invert_x || !cfg->no_invert_x;
+    bool inv_y = cfg->invert_y || !cfg->no_invert_y;
+
     if (cfg->swap_xy) {
         int16_t tmp = x;
         x = y;
         y = tmp;
     }
-    if (cfg->invert_x) {
+    if (inv_x) {
         x = -x;
     }
-    if (cfg->invert_y) {
+    if (inv_y) {
         y = -y;
     }
 
@@ -814,6 +828,8 @@ static int paw32xx_pm_action(const struct device *dev, enum pm_device_action act
         .invert_x = DT_INST_PROP(n, invert_x),                                                     \
         .invert_y = DT_INST_PROP(n, invert_y),                                                     \
         .swap_xy = DT_INST_PROP(n, swap_xy),                                                       \
+        .no_invert_x = DT_INST_PROP(n, no_invert_x),                                               \
+        .no_invert_y = DT_INST_PROP(n, no_invert_y),                                               \
     };                                                                                             \
                                                                                                    \
     static struct paw32xx_data paw32xx_data_##n;                                                   \
