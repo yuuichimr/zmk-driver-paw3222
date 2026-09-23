@@ -79,31 +79,35 @@
         status = "disabled";
     };
 
-    /* pointer coming from the LEFT half's bay (dual-ball setup), forwarded over BLE */
+    /* pointer (ball or trackpad) in the LEFT half's bay, forwarded over BLE */
     split_inputs {
         #address-cells = <1>;
         #size-cells = <0>;
 
-        left_ball_split: left_ball_split@0 {
+        left_pointer_split: left_pointer_split@0 {
             compatible = "zmk,input-split";
             reg = <0>;
             status = "disabled";
         };
     };
 
-    /* cursor ball in this half's bay (enabled by tsumugi_ball_right) */
-    trackball_listener: trackball_listener {
+    /* cursor pointer in the central's bay; the ball / trackpad add-on sets the device */
+    cursor_listener: cursor_listener {
         compatible = "zmk,input-listener";
         status = "disabled";
-        device = <&trackball>;
     };
 
-    left_ball_listener: left_ball_listener {
+    left_pointer_listener: left_pointer_listener {
         compatible = "zmk,input-listener";
         status = "disabled";
-        device = <&left_ball_split>;
+        device = <&left_pointer_split>;
     };
 };
+
+/*
+ * Module bay pointers. Only one of spi0 (ball) / i2c0 (trackpad) may be enabled:
+ * they share the same nRF peripheral instance and the same two bay pins.
+ */
 
 /* module bay: PAW3222 optical sensor on a 3-wire SPI (SDIO on MOSI+MISO) */
 &pinctrl {
@@ -112,6 +116,22 @@
             psels = <NRF_PSEL(SPIM_SCK, 0, 6)>,
                     <NRF_PSEL(SPIM_MOSI, 0, 8)>,
                     <NRF_PSEL(SPIM_MISO, 0, 8)>;
+        };
+    };
+
+    i2c0_default: i2c0_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SCL, 0, 6)>,
+                    <NRF_PSEL(TWIM_SDA, 0, 8)>;
+            bias-pull-up;
+        };
+    };
+
+    i2c0_sleep: i2c0_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SCL, 0, 6)>,
+                    <NRF_PSEL(TWIM_SDA, 0, 8)>;
+            low-power-enable;
         };
     };
 
@@ -139,6 +159,27 @@
         spi-max-frequency = <2000000>;
         irq-gpios = <&pro_micro 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         res-cpi = <1140>;
+        status = "disabled";
+    };
+};
+
+/* module bay: Cirque Pinnacle 35 mm trackpad (TM035035) on I2C, DR on the MOTION pin */
+&i2c0 {
+    compatible = "nordic,nrf-twim";
+    pinctrl-0 = <&i2c0_default>;
+    pinctrl-1 = <&i2c0_sleep>;
+    pinctrl-names = "default", "sleep";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    status = "disabled";
+
+    trackpad: trackpad@2a {
+        compatible = "cirque,pinnacle";
+        reg = <0x2a>;
+        data-ready-gpios = <&pro_micro 3 GPIO_ACTIVE_HIGH>;
+        data-mode = "relative";
+        sensitivity = "2x";
+        primary-tap-enable;
+        sleep-mode-enable;
         status = "disabled";
     };
 };

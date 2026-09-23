@@ -1,0 +1,16 @@
+/*
+ * Add-on: 35 mm Cirque trackpad in the LEFT (peripheral) bay, forwarded to the
+ * central (combine with tsumugi_left_scroll_central on the right half).
+ */
+&i2c0 {
+    status = "okay";
+};
+
+&trackpad {
+    status = "okay";
+};
+
+&left_pointer_split {
+    status = "okay";
+    device = <&trackpad>;
+};

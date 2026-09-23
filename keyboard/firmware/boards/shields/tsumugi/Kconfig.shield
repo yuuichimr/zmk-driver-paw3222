@@ -12,8 +12,14 @@ config SHIELD_TSUMUGI_BALL_RIGHT
 config SHIELD_TSUMUGI_BALL_LEFT
     def_bool $(shields_list_contains,tsumugi_ball_left)
 
-config SHIELD_TSUMUGI_SCROLL_BALL_CENTRAL
-    def_bool $(shields_list_contains,tsumugi_scroll_ball_central)
+config SHIELD_TSUMUGI_TRACKPAD_RIGHT
+    def_bool $(shields_list_contains,tsumugi_trackpad_right)
+
+config SHIELD_TSUMUGI_TRACKPAD_LEFT
+    def_bool $(shields_list_contains,tsumugi_trackpad_left)
+
+config SHIELD_TSUMUGI_LEFT_SCROLL_CENTRAL
+    def_bool $(shields_list_contains,tsumugi_left_scroll_central)
 
 config SHIELD_TSUMUGI_ENCODER
     def_bool $(shields_list_contains,tsumugi_encoder)

@@ -1,7 +1,7 @@
 /*
  * Add-on: trackball in the LEFT (peripheral) bay. Motion is forwarded to the
  * central through the input-split device; the central applies the processors
- * (see tsumugi_scroll_ball_central).
+ * (see tsumugi_left_scroll_central).
  */
 &spi0 {
     status = "okay";
@@ -11,7 +11,7 @@
     status = "okay";
 };
 
-&left_ball_split {
+&left_pointer_split {
     status = "okay";
     device = <&trackball>;
 };

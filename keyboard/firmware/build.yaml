@@ -3,6 +3,7 @@
 #
 #  right  = BLE central, 25 mm cursor ball in the bay (default)
 #  left   = peripheral; pick ONE file to match what sits in the left bay
+#  bay modules: 25/19 mm ball (PAW3222) | 35 mm Cirque trackpad | EC11 encoder | blank
 ---
 include:
   - board: nice_nano//zmk
@@ -16,15 +17,25 @@ include:
   - board: nice_nano//zmk
     shield: tsumugi_left tsumugi_encoder
     artifact-name: tsumugi_left_encoder
-  # dual-ball: left ball = dedicated scroll ball (flash BOTH of these)
+  # dual pointer: left ball/trackpad = dedicated scroll device
+  # (right: tsumugi_right_ball_dual + left: tsumugi_left_scrollball or tsumugi_left_scrollpad)
   - board: nice_nano//zmk
     shield: tsumugi_left tsumugi_ball_left
     artifact-name: tsumugi_left_scrollball
   - board: nice_nano//zmk
-    shield: tsumugi_right tsumugi_ball_right tsumugi_scroll_ball_central
+    shield: tsumugi_right tsumugi_ball_right tsumugi_left_scroll_central
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
     artifact-name: tsumugi_right_ball_dual
   - board: nice_nano//zmk
     shield: settings_reset
     artifact-name: settings_reset
+  # trackpad (35 mm Cirque TM035035) in the bay instead of a ball
+  - board: nice_nano//zmk
+    shield: tsumugi_right tsumugi_trackpad_right
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: tsumugi_right_trackpad
+  - board: nice_nano//zmk
+    shield: tsumugi_left tsumugi_trackpad_left
+    artifact-name: tsumugi_left_scrollpad

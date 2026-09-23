@@ -48,11 +48,13 @@
     excluded-positions = <MOUSE_KEYS>;
 };
 
-&trackball_listener {
+&cursor_listener {
     input-processors = <&zip_temp_layer MOUSE 700>;
 
+    /* hold ';' on the mouse layer, or hold Lower (left thumb), to scroll with the ball
+       - the Lower variant is borrowed from cocot46plus */
     scroller {
-        layers = <SCROLL>;
+        layers = <SCROLL LOWER>;
         input-processors = <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,
                            <&zip_xy_to_scroll_mapper>,
                            <&zip_scroll_scaler 1 10>;

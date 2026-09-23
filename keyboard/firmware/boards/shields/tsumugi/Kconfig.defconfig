@@ -26,7 +26,17 @@ config PAW3222
 
 endif
 
-if SHIELD_TSUMUGI_SCROLL_BALL_CENTRAL
+if SHIELD_TSUMUGI_TRACKPAD_RIGHT || SHIELD_TSUMUGI_TRACKPAD_LEFT
+
+config ZMK_POINTING
+    default y
+
+config I2C
+    default y
+
+endif
+
+if SHIELD_TSUMUGI_LEFT_SCROLL_CENTRAL
 
 config ZMK_POINTING
     default y

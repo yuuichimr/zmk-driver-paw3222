@@ -1,15 +1,15 @@
 /*
- * Add-on for the central when the LEFT half carries a ball: the left ball is a
- * dedicated scroll ball (vertical + horizontal), always.
+ * Add-on for the central when the LEFT half carries a pointer (ball or
+ * trackpad): it becomes a dedicated scroll device (vertical + horizontal).
  */
 #include <input/processors.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
 
-&left_ball_split {
+&left_pointer_split {
     status = "okay";
 };
 
-&left_ball_listener {
+&left_pointer_listener {
     status = "okay";
     input-processors = <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,
                        <&zip_xy_to_scroll_mapper>,
