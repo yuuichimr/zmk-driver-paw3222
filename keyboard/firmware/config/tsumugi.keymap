@@ -1,0 +1,167 @@
+/*
+ * Tsumugi default keymap
+ *
+ * Key positions (44):
+ *   0  1  2  3  4  5 |  6  7  8  9 10 11
+ *  12 13 14 15 16 17 | 18 19 20 21 22 23
+ *  24 25 26 27 28 29 | 30 31 32 33 34 35
+ *        36 37 38 [39]|[40] 41 42 43
+ *  39 / 40 = module bay contacts (encoder push switch); unused with a trackball.
+ */
+
+#include <behaviors.dtsi>
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
+#include <dt-bindings/zmk/ext_power.h>
+#include <dt-bindings/zmk/input_transform.h>
+
+#define BASE   0
+#define LOWER  1
+#define RAISE  2
+#define ADJUST 3
+#define MOUSE  4
+#define SCROLL 5
+#define SNIPE  6
+
+/* mouse-layer key positions that must NOT cancel the auto mouse layer */
+#define MOUSE_KEYS 16 17 18 19 20 21 22 28 29 41 42
+
+&mt {
+    flavor = "balanced";
+    tapping-term-ms = <200>;
+    quick-tap-ms = <150>;
+};
+
+&lt {
+    flavor = "balanced";
+    tapping-term-ms = <200>;
+    quick-tap-ms = <150>;
+};
+
+/* auto mouse layer: pops up when the ball moves, disappears 700 ms after it stops,
+   but only if no key was typed in the last 250 ms (no accidental activation while typing) */
+&zip_temp_layer {
+    require-prior-idle-ms = <250>;
+    excluded-positions = <MOUSE_KEYS>;
+};
+
+&trackball_listener {
+    input-processors = <&zip_temp_layer MOUSE 700>;
+
+    scroller {
+        layers = <SCROLL>;
+        input-processors = <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,
+                           <&zip_xy_to_scroll_mapper>,
+                           <&zip_scroll_scaler 1 10>;
+    };
+
+    sniper {
+        layers = <SNIPE>;
+        input-processors = <&zip_xy_scaler 1 3>;
+    };
+};
+
+/ {
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <LOWER RAISE>;
+            then-layer = <ADJUST>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        combo_esc {
+            timeout-ms = <40>;
+            key-positions = <1 2>;          /* Q + W */
+            bindings = <&kp ESC>;
+        };
+        combo_caps_word {
+            timeout-ms = <40>;
+            key-positions = <15 20>;        /* F + J */
+            bindings = <&caps_word>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        base_layer {
+            display-name = "Base";
+            bindings = <
+&kp TAB   &kp Q &kp W &kp E    &kp R   &kp T      &kp Y &kp U &kp I     &kp O   &kp P    &kp MINUS
+&kp LCTRL &kp A &kp S &kp D    &kp F   &kp G      &kp H &kp J &kp K     &kp L   &kp SEMI &kp SQT
+&kp LSHFT &kp Z &kp X &kp C    &kp V   &kp B      &kp N &kp M &kp COMMA &kp DOT &kp FSLH &kp RSHFT
+      &kp LGUI &lt LOWER LANG2 &mt LSHFT SPACE &kp C_MUTE    &none &lt RAISE ENTER &kp BSPC &lt LOWER LANG1
+            >;
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
+        };
+
+        lower_layer {
+            display-name = "Lower";
+            bindings = <
+&kp GRAVE &kp N1   &kp N2   &kp N3   &kp N4   &kp N5       &kp N6   &kp N7   &kp N8    &kp N9   &kp N0   &kp EQUAL
+&trans    &kp EXCL &kp AT   &kp HASH &kp DLLR &kp PRCNT    &kp CARET &kp AMPS &kp STAR &kp LPAR &kp RPAR &kp PIPE
+&trans    &kp LT   &kp GT   &kp LBKT &kp RBKT &kp BSLH     &kp PLUS &kp LBRC &kp RBRC  &kp UNDER &kp QMARK &trans
+          &trans   &trans   &trans   &trans                 &trans   &trans   &kp DEL  &trans
+            >;
+            sensor-bindings = <&inc_dec_kp C_NEXT C_PREV>;
+        };
+
+        raise_layer {
+            display-name = "Raise";
+            bindings = <
+&kp ESC   &kp F1  &kp F2  &kp F3  &kp F4  &kp F5         &kp HOME &kp PG_DN &kp PG_UP &kp END   &kp INS   &kp PSCRN
+&trans    &kp F6  &kp F7  &kp F8  &kp F9  &kp F10        &kp LEFT &kp DOWN  &kp UP    &kp RIGHT &kp LC(Z) &kp LC(Y)
+&trans    &kp F11 &kp F12 &kp LC(X) &kp LC(C) &kp LC(V)  &kp LA(LEFT) &kp LC(PG_DN) &kp LC(PG_UP) &kp LA(RIGHT) &kp LC(F) &trans
+          &trans  &trans  &trans  &trans                  &trans   &trans    &trans    &trans
+            >;
+            sensor-bindings = <&inc_dec_kp PG_DN PG_UP>;
+        };
+
+        adjust_layer {
+            display-name = "Adjust";
+            bindings = <
+&bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4    &studio_unlock &none &none &none &none &bootloader
+&none      &out OUT_USB &out OUT_BLE &none &none &none                        &none &kp C_BRI_DN &kp C_BRI_UP &none &none &sys_reset
+&none      &ext_power EP_TOG &none &none &none &none                         &none &none &none &none &none &none
+           &trans &trans &trans &trans                                        &trans &trans &trans &trans
+            >;
+        };
+
+        mouse_layer {
+            display-name = "Mouse";
+            /* right home row = buttons, ';' = hold to scroll, 'H' = precision */
+            bindings = <
+&trans &trans &trans &trans &trans &trans         &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &mkp MB1 &mkp MB2     &mo SNIPE &mkp MB1 &mkp MB3 &mkp MB2 &mo SCROLL &trans
+&trans &trans &trans &trans &mkp MB4 &mkp MB5     &trans &trans &trans &trans &trans &trans
+       &trans &trans &trans &trans                &trans &mkp MB1 &mkp MB2 &trans
+            >;
+        };
+
+        scroll_layer {
+            display-name = "Scroll";
+            bindings = <
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+       &trans &trans &trans &trans           &trans &trans &trans &trans
+            >;
+        };
+
+        snipe_layer {
+            display-name = "Snipe";
+            bindings = <
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+       &trans &trans &trans &trans           &trans &trans &trans &trans
+            >;
+        };
+    };
+};

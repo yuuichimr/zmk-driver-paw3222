@@ -1,0 +1,19 @@
+# Tsumugi base halves
+config SHIELD_TSUMUGI_LEFT
+    def_bool $(shields_list_contains,tsumugi_left)
+
+config SHIELD_TSUMUGI_RIGHT
+    def_bool $(shields_list_contains,tsumugi_right)
+
+# Module-bay add-ons (combine with a base half, e.g. "tsumugi_right tsumugi_ball_right")
+config SHIELD_TSUMUGI_BALL_RIGHT
+    def_bool $(shields_list_contains,tsumugi_ball_right)
+
+config SHIELD_TSUMUGI_BALL_LEFT
+    def_bool $(shields_list_contains,tsumugi_ball_left)
+
+config SHIELD_TSUMUGI_SCROLL_BALL_CENTRAL
+    def_bool $(shields_list_contains,tsumugi_scroll_ball_central)
+
+config SHIELD_TSUMUGI_ENCODER
+    def_bool $(shields_list_contains,tsumugi_encoder)

@@ -1,0 +1,15 @@
+file_format: "1"
+id: tsumugi
+name: Tsumugi
+type: shield
+url: https://github.com/yuuichimr/zmk-driver-paw3222/tree/main/keyboard
+requires: [pro_micro]
+exposes: [i2c_oled]
+features:
+  - keys
+  - encoder
+  - pointer
+  - studio
+siblings:
+  - tsumugi_left
+  - tsumugi_right

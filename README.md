@@ -88,8 +88,25 @@ endif
 ## Properties
 
 - `irq-gpios`: GPIO connected to the motion pin (required)
+- `power-gpios`: GPIO that switches the sensor supply (optional)
 - `res-cpi`: CPI resolution for the sensor (optional)
 - `force-awake`: Initialize the sensor in "force awake" mode (optional, boolean)
+
+## Kconfig
+
+- `CONFIG_PAW3222_POLL_INTERVAL_MS` (default `15`, range 4-50): polling interval used
+  while the sensor keeps reporting motion. Lower = smoother cursor, slightly more current.
+
+## Notes
+
+- Works with `CONFIG_PM_DEVICE_RUNTIME=y`: the driver takes a runtime-PM reference
+  at init, so the sensor is no longer left suspended (previously it never reported
+  motion when runtime PM was enabled).
+
+## Example keyboard
+
+[`keyboard/`](keyboard/) contains **Tsumugi**, an open low-profile wireless split
+keyboard with a PAW3222 trackball built on this driver (PCB, case, ZMK firmware).
 
 ---
 
@@ -184,5 +201,21 @@ endif
 ## プロパティ
 
 - `irq-gpios`: モーションピンに接続されたGPIO（必須）
+- `power-gpios`: センサー電源を切り替えるGPIO（任意）
 - `res-cpi`: センサーのCPI解像度（任意）
 - `force-awake`: センサーを「強制起動」モードで初期化（任意、ブール値）
+
+## Kconfig
+
+- `CONFIG_PAW3222_POLL_INTERVAL_MS`（既定 `15`、4〜50）: 動き検出中のポーリング間隔。
+  小さいほどカーソルが滑らかになり、消費電流はわずかに増えます。
+
+## 補足
+
+- `CONFIG_PM_DEVICE_RUNTIME=y` でも動作します。初期化時にランタイムPMの参照を取得するため、
+  以前のように「ランタイムPM有効時にセンサーがサスペンドされたまま動かない」問題は起きません。
+
+## 作例キーボード
+
+[`keyboard/`](keyboard/) に、このドライバを使ったロープロファイル無線分割トラックボールキーボード
+**Tsumugi（紡）** の設計一式（PCB・ケース・ZMKファームウェア）があります。

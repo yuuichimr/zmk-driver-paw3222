@@ -1,0 +1,15 @@
+/*
+ * Add-on: 25 mm trackball in the RIGHT (central) bay -> main cursor.
+ * Layer-dependent behaviour (scroll / precision / auto-mouse) lives in the keymap.
+ */
+&spi0 {
+    status = "okay";
+};
+
+&trackball {
+    status = "okay";
+};
+
+&trackball_listener {
+    status = "okay";
+};

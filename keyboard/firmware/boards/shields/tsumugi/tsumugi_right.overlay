@@ -1,0 +1,5 @@
+#include "tsumugi.dtsi"
+
+&tsumugi_transform {
+    col-offset = <6>;
+};

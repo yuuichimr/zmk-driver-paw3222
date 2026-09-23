@@ -1,0 +1,15 @@
+parse_config:
+  raw_binding_map:
+    "&mkp MB1": "L-Click"
+    "&mkp MB2": "R-Click"
+    "&mkp MB3": "M-Click"
+    "&mkp MB4": "Back"
+    "&mkp MB5": "Fwd"
+    "&studio_unlock": "Studio unlock"
+    "&bootloader": "Boot"
+    "&sys_reset": "Reset"
+    "&caps_word": "Caps Word"
+  trans_legend: {t: "▽", type: trans}
+draw_config:
+  key_h: 56
+  dark_mode: auto

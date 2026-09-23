@@ -1,0 +1,17 @@
+# firmware build outputs and west checkouts (created by build_firmware.sh / CI)
+firmware/build/
+firmware/.west/
+firmware/zmk/
+firmware/zephyr/
+firmware/modules/
+firmware/zmk-rgbled-widget/
+firmware/optional/
+firmware/tools/
+firmware/bootloader/
+# KiCad backups / lock files
+*.kicad_prl
+*-backups/
+~*.lck
+fp-info-cache
+__pycache__/
+pcb/output/gerbers_*/

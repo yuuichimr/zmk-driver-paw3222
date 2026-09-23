@@ -1,0 +1,460 @@
+meta:
+  engine: 4.2.1
+  name: tsumugi
+  version: 0.1
+  author: tsumugi project
+
+# ------------------------------------------------------------------
+# Tsumugi (紡) : low-profile wireless split with dual module bays
+#   - Kailh Choc v1 hotswap, 18 x 17 mm choc spacing
+#   - 3x6 column stagger + 3 thumb keys per half
+#   - "module bay" at the thumb rest: 25 mm trackball (PAW3222),
+#     EC11 encoder, or blank cover. Both halves share the same bay.
+#   - nice!nano v2 compatible (Pro Micro nRF52840) controller
+# The zone below describes the RIGHT half; the LEFT half is its mirror.
+# ------------------------------------------------------------------
+
+units:
+  kx: 18
+  ky: 17
+  kpx: kx - 0.5
+  kpy: ky - 0.5
+  ball_d: 25
+  ball_hole: 28     # ball + 1.5 mm clearance each side
+  bay_r: 17         # radius of the bay area kept free on the PCB
+
+points:
+  key:
+    width: kx
+    height: ky
+    padding: ky
+    spread: kx
+  zones:
+    # LEFT half, columns run outer (x-) -> inner (x+). RIGHT half = mirror.
+    matrix:
+      key:
+        tags: [key]
+      anchor:
+        shift: [100, -150]
+        rotate: 4
+      rows:
+        bottom:
+          row_net: R3
+          row_idx: 2
+        home:
+          row_net: R2
+          row_idx: 1
+        top:
+          row_net: R1
+          row_idx: 0
+      columns:
+        outer:
+          key:
+            column_net: C6
+            col_idx: 5
+        pinky:
+          key:
+            stagger: 2
+            column_net: C5
+            col_idx: 4
+        ring:
+          key:
+            stagger: 8
+            splay: -4
+            origin: [-9, -8.5]
+            column_net: C4
+            col_idx: 3
+        middle:
+          key:
+            stagger: 3
+            column_net: C3
+            col_idx: 2
+        index:
+          key:
+            stagger: -5
+            column_net: C2
+            col_idx: 1
+        inner:
+          key:
+            stagger: -3
+            column_net: C1
+            col_idx: 0
+    thumb:
+      key:
+        tags: [key, thumb]
+      anchor:
+        ref: matrix_index_bottom
+        shift: [3, -21.5]
+      rows:
+        cluster:
+          row_net: R4
+          row_idx: 3
+      columns:
+        near:
+          key:
+            column_net: C2
+            col_idx: 1
+        mid:
+          key:
+            spread: -18.5
+            splay: 10
+            origin: [9, -8.5]
+            column_net: C3
+            col_idx: 2
+        far:
+          key:
+            spread: -18.5
+            splay: 10
+            origin: [9, -8.5]
+            column_net: C4
+            col_idx: 3
+    # centre of the module bay (trackball / encoder) - the thumb rest point
+    bay:
+      anchor:
+        ref: thumb_near_cluster
+        shift: [24, -6]
+      key:
+        tags: [bay]
+        width: 2 bay_r
+        height: 2 bay_r
+      rows:
+        centre:
+          row_net: R4
+          row_idx: 3
+      columns:
+        ball:
+          key:
+            column_net: C1
+            col_idx: 0
+    # controller + power switch + reset (inner top corner)
+    mcu:
+      anchor:
+        ref: matrix_inner_top
+        shift: [22, -8]
+      key:
+        tags: [mcu]
+        width: 19
+        height: 34
+      rows:
+        main:
+          row_net: GND
+      columns:
+        nn:
+  mirror:
+    ref: mcu_nn_main
+    distance: 60
+
+outlines:
+  _keys_left:
+    - what: rectangle
+      where: [[key, "-/^mirror_/"]]
+      size: [kx + 1, ky + 1]
+  _fill_left:
+    - what: circle
+      where: [[bay, "-/^mirror_/"]]
+      radius: bay_r + 1
+    - what: rectangle
+      where: [[mcu, "-/^mirror_/"]]
+      size: [26, 38]
+    - what: rectangle
+      where: [[mcu, "-/^mirror_/"]]
+      adjust:
+        shift: [0, -24]
+      size: [24, 20]
+  _all_left:
+    - _keys_left
+    - +_fill_left
+  _grow_left:
+    - what: outline
+      name: _all_left
+      expand: 9
+      joints: round
+  board_left:
+    - what: outline
+      name: _grow_left
+      expand: -7.5
+      joints: round
+  pcb_left:
+    - board_left
+    - operation: subtract
+      what: circle
+      where: [[bay, "-/^mirror_/"]]
+      radius: ball_hole / 2
+  _keys_right:
+    - what: rectangle
+      where: [[key, "/^mirror_/"]]
+      size: [kx + 1, ky + 1]
+  _fill_right:
+    - what: circle
+      where: [[bay, "/^mirror_/"]]
+      radius: bay_r + 1
+    - what: rectangle
+      where: [[mcu, "/^mirror_/"]]
+      size: [26, 38]
+    - what: rectangle
+      where: [[mcu, "/^mirror_/"]]
+      adjust:
+        shift: [0, -24]
+      size: [24, 20]
+  _all_right:
+    - _keys_right
+    - +_fill_right
+  _grow_right:
+    - what: outline
+      name: _all_right
+      expand: 9
+      joints: round
+  board_right:
+    - what: outline
+      name: _grow_right
+      expand: -7.5
+      joints: round
+  pcb_right:
+    - board_right
+    - operation: subtract
+      what: circle
+      where: [[bay, "/^mirror_/"]]
+      radius: ball_hole / 2
+  keycaps:
+    - what: rectangle
+      where: key
+      size: [kpx, kpy]
+  ball_cutout:
+    - what: circle
+      where: bay
+      radius: ball_hole / 2
+  board:
+    - board_left
+    - board_right
+  preview:
+    - board
+    - -ball_cutout
+    - ^keycaps
+
+pcbs:
+  tsumugi_left:
+    template: kicad5
+    outlines:
+      edge:
+        outline: pcb_left
+        layer: Edge.Cuts
+    footprints:
+      choc:
+        what: choc
+        where: [[key, "-/^mirror_/"]]
+        params:
+          hotswap: true
+          keycaps: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+      diode:
+        what: sod123_b
+        where: [[key, "-/^mirror_/"]]
+        adjust:
+          shift: [0, -5]
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+      mcu:
+        what: promicro
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          rotate: -90
+        params:
+          orientation: up
+          RAW: RAW
+          P1: MOD_SCK
+          P0: MOD_SDIO
+          P2: MOD_NCS
+          P3: MOD_MOTION
+          P4: R1
+          P5: R2
+          P6: R3
+          P7: R4
+          P8: LED_R
+          P9: LED_G
+          P21: C1
+          P20: C2
+          P19: C3
+          P18: C4
+          P15: C5
+          P14: C6
+          P16: LED_B
+          P10: AUX
+      power:
+        what: slider
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [8.8, 18.3]   # top edge, next to USB-C and the RAW pin
+        params:
+          side: F
+          from: BAT_P
+          to: RAW
+      reset:
+        what: button
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [0, 6]
+        params:
+          side: B
+          from: RST
+          to: GND
+      battery:
+        what: batpads
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [0, -6]
+      bay_header:
+        what: header8
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [0, -19.5]
+        params:
+          P7: C1
+          P8: MOD_KEY
+      bay_diode:
+        what: sod123_b
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [0, -26]
+        params:
+          from: MOD_KEY
+          to: R4
+      led_r:
+        what: led_res
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [-7.6, -31]
+        params:
+          gpio: LED_R
+          mid: LED_R_A
+      led_g:
+        what: led_res
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [0, -31]
+        params:
+          gpio: LED_G
+          mid: LED_G_A
+      led_b:
+        what: led_res
+        where: [[mcu, "-/^mirror_/"]]
+        adjust:
+          shift: [7.6, -31]
+        params:
+          gpio: LED_B
+          mid: LED_B_A
+  tsumugi_right:
+    template: kicad5
+    outlines:
+      edge:
+        outline: pcb_right
+        layer: Edge.Cuts
+    footprints:
+      choc:
+        what: choc
+        where: [[key, "/^mirror_/"]]
+        params:
+          hotswap: true
+          keycaps: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+      diode:
+        what: sod123_b
+        where: [[key, "/^mirror_/"]]
+        adjust:
+          shift: [0, -5]
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+      mcu:
+        what: promicro
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          rotate: 90   # mirrored placement flips the sign -> USB faces north on both halves
+        params:
+          # mounted component-side DOWN on the right PCB so that the P0..P9 pin
+          # row faces the keys (same trick as reversible boards like Corne)
+          orientation: down
+          RAW: RAW
+          P1: MOD_SCK
+          P0: MOD_SDIO
+          P2: MOD_NCS
+          P3: MOD_MOTION
+          P4: R1
+          P5: R2
+          P6: R3
+          P7: R4
+          P8: LED_R
+          P9: LED_G
+          P21: C1
+          P20: C2
+          P19: C3
+          P18: C4
+          P15: C5
+          P14: C6
+          P16: LED_B
+          P10: AUX
+      power:
+        what: slider
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [8.8, 18.3]   # mirrored -> inner edge, next to RAW of the flipped controller
+        params:
+          side: F
+          from: BAT_P
+          to: RAW
+      reset:
+        what: button
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [0, 6]
+        params:
+          side: B
+          from: RST
+          to: GND
+      battery:
+        what: batpads
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [0, -6]
+      bay_header:
+        what: header8
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [0, -19.5]
+        params:
+          P7: C1
+          P8: MOD_KEY
+      bay_diode:
+        what: sod123_b
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [0, -26]
+        params:
+          from: MOD_KEY
+          to: R4
+      led_r:
+        what: led_res
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [-7.6, -31]
+        params:
+          gpio: LED_R
+          mid: LED_R_A
+      led_g:
+        what: led_res
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [0, -31]
+        params:
+          gpio: LED_G
+          mid: LED_G_A
+      led_b:
+        what: led_res
+        where: [[mcu, "/^mirror_/"]]
+        adjust:
+          shift: [7.6, -31]
+        params:
+          gpio: LED_B
+          mid: LED_B_A

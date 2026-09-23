@@ -1,0 +1,19 @@
+# Local/CI manifest for building Tsumugi firmware.
+# The repository root itself is a Zephyr module (PAW3222 driver + Tsumugi shield),
+# and is added with -DZMK_EXTRA_MODULES by the build workflow.
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: caksoylar
+      url-base: https://github.com/caksoylar
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      revision: main
+      import: app/west.yml
+    - name: zmk-rgbled-widget
+      remote: caksoylar
+      revision: main
+  self:
+    path: config

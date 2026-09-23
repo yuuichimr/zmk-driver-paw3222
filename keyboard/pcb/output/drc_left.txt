@@ -1,0 +1,378 @@
+** Drc report for /home/user/zmk-driver-paw3222/keyboard/pcb/output/tsumugi_left.kicad_pcb **
+** Created on 2026-09-23 17:23:32 **
+
+** Found 122 DRC violations **
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(217.3296 mm, 100.3202 mm): Line on F.Silkscreen
+    @(220.7196 mm, 132.3602 mm): Line on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(217.3296 mm, 97.4702 mm): Line on F.Silkscreen
+    @(220.7196 mm, 99.3402 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(217.3296 mm, 97.4702 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(217.3296 mm, 100.3202 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(220.6296 mm, 97.4702 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(220.6296 mm, 97.4702 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(223.9296 mm, 100.3202 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(209.0796 mm, 109.8702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(209.0796 mm, 109.8702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(209.0796 mm, 112.3702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(214.5796 mm, 109.8702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(214.5796 mm, 109.8702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(214.5796 mm, 112.3702 mm): Line on B.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(177.4507 mm, 147.8476 mm): Reference 'H5'
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(220.7196 mm, 138.8202 mm): Footprint Text 'KEY' of J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 103.1502 mm): PTH pad 1 [RAW] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 103.1502 mm): PTH pad 1 [RAW] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 105.6902 mm): PTH pad 2 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 105.6902 mm): PTH pad 2 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 108.2302 mm): PTH pad 3 [RST] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 108.2302 mm): PTH pad 3 [RST] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 110.7702 mm): PTH pad 4 [VCC] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 110.7702 mm): PTH pad 4 [VCC] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 113.3102 mm): PTH pad 5 [C1] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 113.3102 mm): PTH pad 5 [C1] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 115.8502 mm): PTH pad 6 [C2] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 115.8502 mm): PTH pad 6 [C2] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 118.3902 mm): PTH pad 7 [C3] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 118.3902 mm): PTH pad 7 [C3] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 120.9302 mm): PTH pad 8 [C4] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 120.9302 mm): PTH pad 8 [C4] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 123.4702 mm): PTH pad 9 [C5] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 123.4702 mm): PTH pad 9 [C5] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 126.0102 mm): PTH pad 10 [C6] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 126.0102 mm): PTH pad 10 [C6] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 128.5502 mm): PTH pad 11 [LED_B] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 128.5502 mm): PTH pad 11 [LED_B] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 131.0902 mm): PTH pad 12 [AUX] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(219.4496 mm, 131.0902 mm): PTH pad 12 [AUX] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 103.1502 mm): PTH pad 13 [MOD_SCK] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 103.1502 mm): PTH pad 13 [MOD_SCK] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 105.6902 mm): PTH pad 14 [MOD_SDIO] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 105.6902 mm): PTH pad 14 [MOD_SDIO] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 108.2302 mm): PTH pad 15 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 108.2302 mm): PTH pad 15 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 110.7702 mm): PTH pad 16 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 110.7702 mm): PTH pad 16 [GND] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 113.3102 mm): PTH pad 17 [MOD_NCS] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 113.3102 mm): PTH pad 17 [MOD_NCS] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 115.8502 mm): PTH pad 18 [MOD_MOTION] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 115.8502 mm): PTH pad 18 [MOD_MOTION] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 118.3902 mm): PTH pad 19 [R1] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 118.3902 mm): PTH pad 19 [R1] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 120.9302 mm): PTH pad 20 [R2] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 120.9302 mm): PTH pad 20 [R2] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 123.4702 mm): PTH pad 21 [R3] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 123.4702 mm): PTH pad 21 [R3] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 126.0102 mm): PTH pad 22 [R4] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 126.0102 mm): PTH pad 22 [R4] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 128.5502 mm): PTH pad 23 [LED_R] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 128.5502 mm): PTH pad 23 [LED_R] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 131.0902 mm): PTH pad 24 [LED_G] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(204.2096 mm, 131.0902 mm): PTH pad 24 [LED_G] of MCU1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(220.7196 mm, 99.3402 mm): Line on F.Silkscreen
+[lib_footprint_issues]: The current configuration does not include the library 'E73'.
+    Local override; Severity: warning
+    @(220.6296 mm, 98.8202 mm): Footprint T1
+[lib_footprint_issues]: The current configuration does not include the library 'E73'.
+    Local override; Severity: warning
+    @(211.8296 mm, 111.1202 mm): Footprint B1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(100.0000 mm, 150.0000 mm): Footprint S1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 138.1202 mm): Footprint S7
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 140.1202 mm): Footprint S13
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 135.1202 mm): Footprint S10
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(97.6283 mm, 116.0828 mm): Footprint S3
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(177.4507 mm, 151.0476 mm): Footprint H5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(177.4507 mm, 151.0476 mm): Footprint H5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(177.4507 mm, 151.0476 mm): Footprint H5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(177.4507 mm, 151.0476 mm): Footprint H5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(177.4507 mm, 151.0476 mm): Footprint H5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(154.9903 mm, 163.3122 mm): Footprint S20
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(211.8296 mm, 136.6202 mm): Footprint J1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 109.1202 mm): Footprint S18
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 104.1202 mm): Footprint S9
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 118.1202 mm): Footprint S11
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 121.1202 mm): Footprint S8
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(117.8166 mm, 146.7493 mm): Footprint S4
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(219.4296 mm, 148.1202 mm): Footprint LED3
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(211.8296 mm, 148.1202 mm): Footprint LED2
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.7462 mm, 168.4235 mm): Footprint S21
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(174.8296 mm, 161.6202 mm): Footprint S19
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(116.6308 mm, 129.7907 mm): Footprint S5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(115.4449 mm, 112.8321 mm): Footprint S6
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 101.1202 mm): Footprint S12
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(211.8296 mm, 117.1202 mm): Footprint MCU1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(98.8141 mm, 133.0414 mm): Footprint S2
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 143.1202 mm): Footprint S16
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 126.1202 mm): Footprint S17
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 123.1202 mm): Footprint S14
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 106.1202 mm): Footprint S15
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(204.2296 mm, 148.1202 mm): Footprint LED1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(137.4563 mm, 173.1220 mm): Footprint D21
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(116.9796 mm, 134.7785 mm): Footprint D5
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 143.1202 mm): Footprint D7
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 123.1202 mm): Footprint D11
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(211.8296 mm, 143.1202 mm): Footprint D22
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(115.7937 mm, 117.8199 mm): Footprint D6
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 114.1202 mm): Footprint D18
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 126.1202 mm): Footprint D8
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 148.1202 mm): Footprint D16
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(155.8586 mm, 168.2362 mm): Footprint D20
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 140.1202 mm): Footprint D10
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(153.8296 mm, 106.1202 mm): Footprint D12
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(211.8296 mm, 123.1202 mm): Footprint BT1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 145.1202 mm): Footprint D13
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 128.1202 mm): Footprint D14
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(135.8296 mm, 109.1202 mm): Footprint D9
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(174.8296 mm, 166.6202 mm): Footprint D19
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(118.1654 mm, 151.7371 mm): Footprint D4
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(97.9771 mm, 121.0706 mm): Footprint D3
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(100.3488 mm, 154.9878 mm): Footprint D1
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(189.8296 mm, 131.1202 mm): Footprint D17
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(99.1629 mm, 138.0292 mm): Footprint D2
+[lib_footprint_issues]: The current configuration does not include the library ''.
+    Local override; Severity: warning
+    @(171.8296 mm, 111.1202 mm): Footprint D15
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(206.3917 mm, 104.4202 mm): Track [C3] on F.Cu, length 1.1799 mm
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(206.3917 mm, 104.4202 mm): Track [C3] on B.Cu, length 1.1799 mm
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **

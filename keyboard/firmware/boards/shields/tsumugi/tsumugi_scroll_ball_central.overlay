@@ -1,0 +1,17 @@
+/*
+ * Add-on for the central when the LEFT half carries a ball: the left ball is a
+ * dedicated scroll ball (vertical + horizontal), always.
+ */
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+
+&left_ball_split {
+    status = "okay";
+};
+
+&left_ball_listener {
+    status = "okay";
+    input-processors = <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,
+                       <&zip_xy_to_scroll_mapper>,
+                       <&zip_scroll_scaler 1 12>;
+};

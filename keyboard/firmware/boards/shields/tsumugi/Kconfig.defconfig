@@ -1,0 +1,36 @@
+if SHIELD_TSUMUGI_LEFT || SHIELD_TSUMUGI_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "Tsumugi"
+
+config ZMK_SPLIT
+    default y
+
+# The right half (trackball side) is the BLE central: pointer data never has to
+# cross the split link, which keeps cursor latency minimal.
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y if SHIELD_TSUMUGI_RIGHT
+
+endif
+
+if SHIELD_TSUMUGI_BALL_RIGHT || SHIELD_TSUMUGI_BALL_LEFT
+
+config ZMK_POINTING
+    default y
+
+config SPI
+    default y
+
+config PAW3222
+    default y
+
+endif
+
+if SHIELD_TSUMUGI_SCROLL_BALL_CENTRAL
+
+config ZMK_POINTING
+    default y
+
+endif
+
+# The EC11 driver is enabled automatically once the bay_encoder node is okay.

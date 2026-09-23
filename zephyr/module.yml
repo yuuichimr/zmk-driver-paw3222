@@ -4,3 +4,5 @@ build:
   kconfig: Kconfig
   settings:
     dts_root: .
+    # Tsumugi keyboard shield (keyboard/firmware/boards/shields/tsumugi)
+    board_root: keyboard/firmware

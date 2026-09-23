@@ -1,0 +1,12 @@
+/* Add-on: EC11 rotary encoder (with push switch on ROW4/COL1) in this half's bay. */
+&bay_encoder {
+    status = "okay";
+};
+
+/ {
+    sensors: sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&bay_encoder>;
+        triggers-per-rotation = <20>;
+    };
+};

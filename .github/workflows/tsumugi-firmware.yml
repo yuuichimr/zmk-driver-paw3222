@@ -1,0 +1,55 @@
+name: Tsumugi firmware
+
+on:
+  push:
+    paths:
+      - "src/**"
+      - "include/**"
+      - "dts/**"
+      - "Kconfig"
+      - "CMakeLists.txt"
+      - "zephyr/**"
+      - "keyboard/firmware/**"
+      - "keyboard/tools/build_firmware.sh"
+      - ".github/workflows/tsumugi-firmware.yml"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache west modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            keyboard/firmware/modules
+            keyboard/firmware/zephyr
+            keyboard/firmware/zmk
+            keyboard/firmware/zmk-rgbled-widget
+          key: west-${{ hashFiles('keyboard/firmware/config/west.yml') }}
+          restore-keys: west-
+
+      - name: West init / update
+        working-directory: keyboard/firmware
+        run: |
+          west init -l config || true
+          west update --fetch-opt=--filter=tree:0
+          west zephyr-export
+
+      - name: Build all variants
+        env:
+          ZMK_APP: ${{ github.workspace }}/keyboard/firmware/zmk/app
+          EXTRA_MODULES: ${{ github.workspace }}/keyboard/firmware/zmk-rgbled-widget
+          OUT: ${{ github.workspace }}/keyboard/firmware/build
+        run: keyboard/tools/build_firmware.sh
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsumugi-firmware
+          path: keyboard/firmware/build/*.uf2

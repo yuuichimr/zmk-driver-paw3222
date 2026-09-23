@@ -1,0 +1,30 @@
+# Firmware build matrix for Tsumugi (used by .github/workflows/tsumugi-firmware.yml
+# and keyboard/tools/build_firmware.sh).
+#
+#  right  = BLE central, 25 mm cursor ball in the bay (default)
+#  left   = peripheral; pick ONE file to match what sits in the left bay
+---
+include:
+  - board: nice_nano//zmk
+    shield: tsumugi_right tsumugi_ball_right
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: tsumugi_right_ball
+  - board: nice_nano//zmk
+    shield: tsumugi_left
+    artifact-name: tsumugi_left_blank
+  - board: nice_nano//zmk
+    shield: tsumugi_left tsumugi_encoder
+    artifact-name: tsumugi_left_encoder
+  # dual-ball: left ball = dedicated scroll ball (flash BOTH of these)
+  - board: nice_nano//zmk
+    shield: tsumugi_left tsumugi_ball_left
+    artifact-name: tsumugi_left_scrollball
+  - board: nice_nano//zmk
+    shield: tsumugi_right tsumugi_ball_right tsumugi_scroll_ball_central
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: tsumugi_right_ball_dual
+  - board: nice_nano//zmk
+    shield: settings_reset
+    artifact-name: settings_reset
