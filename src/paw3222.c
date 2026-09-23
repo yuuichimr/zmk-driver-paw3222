@@ -82,6 +82,7 @@ struct paw32xx_data {
     struct k_timer motion_timer; // Add timer for delayed motion checking
 };
 
+#if DT_INST_NODE_HAS_PROP(0, power_gpios)
 static int paw32xx_force_cs(const struct device *dev, bool force_low) {
     const struct paw32xx_config *cfg = dev->config;
     const struct gpio_dt_spec *cs = NULL;
@@ -104,6 +105,7 @@ static int paw32xx_force_cs(const struct device *dev, bool force_low) {
 
     return 0;
 }
+#endif
 
 // Define a custom sign_extend function to avoid conflict with Zephyr's implementation
 static inline int32_t _sign_extend(uint32_t value, uint8_t index) {
@@ -281,8 +283,8 @@ static void paw32xx_motion_work_handler(struct k_work *work) {
     input_report_rel(data->dev, INPUT_REL_X, x, false, K_FOREVER);
     input_report_rel(data->dev, INPUT_REL_Y, y, true, K_FOREVER);
 
-    // Schedule next check after 15ms without using interrupts
-    k_timer_start(&data->motion_timer, K_MSEC(15), K_NO_WAIT);
+    // Keep polling while the ball moves, without using interrupts
+    k_timer_start(&data->motion_timer, K_MSEC(CONFIG_PAW3222_POLL_INTERVAL_MS), K_NO_WAIT);
 }
 
 static void paw32xx_motion_handler(const struct device *gpio_dev, struct gpio_callback *cb,
@@ -518,6 +520,18 @@ static int paw32xx_init(const struct device *dev) {
         LOG_ERR("Failed to enable runtime power management: %d", ret);
         return ret;
     }
+
+#ifdef CONFIG_PM_DEVICE_RUNTIME
+    // pm_device_runtime_enable() suspends a device whose usage count is zero.
+    // Nothing in ZMK requests the sensor through runtime PM, so without this
+    // reference the sensor would stay powered down and never report motion.
+    // System-level suspend (ZMK sleep) still goes through paw32xx_pm_action().
+    ret = pm_device_runtime_get(dev);
+    if (ret < 0) {
+        LOG_ERR("Failed to resume device: %d", ret);
+        return ret;
+    }
+#endif
 
     return 0;
 }

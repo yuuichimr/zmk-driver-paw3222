@@ -1,6 +1,18 @@
-
 menuconfig PAW3222
     bool "PAW3222 mouse optical sensor"
-  select SPI
+    select SPI
     help
       Enable PAW3222 mouse optical sensor.
+
+if PAW3222
+
+config PAW3222_POLL_INTERVAL_MS
+    int "Motion polling interval while the sensor reports motion (ms)"
+    default 15
+    range 4 50
+    help
+      After a motion interrupt the driver polls the sensor at this interval
+      until motion stops, then re-arms the interrupt. Lower values give a
+      smoother cursor at the cost of more SPI traffic and current.
+
+endif
