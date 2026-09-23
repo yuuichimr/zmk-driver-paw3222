@@ -1,0 +1,146 @@
+{
+  "tent_deg": 9.5,
+  "tent_deg_requested": 8.0,
+  "frame": "desk frame, z=0 is the desk / print bed",
+  "density_g_cm3": 1.24,
+  "mass_note": "solid-model mass (100 % infill); a 4-wall / 20 % infill print is roughly 55-65 % of it",
+  "notes": [
+    "tent raised from 8.0 to 9.5 deg so the sensor module and its screw heads clear the desk by >= 1.0 mm",
+    "sensor axis is desk-vertical (tent angle off the PCB normal) so the module pocket ceiling prints as a flat bridge; lens gap unchanged",
+    "sensor module pocket is open to the underside (module is screwed up into 2 M2 heat-set inserts)",
+    "light-weighting = open-top wells under the tray floor (rib grid), printable without supports",
+    "MCU cover plate underside at z=+5.6 (PCB frame) for both halves: clears the right nice!nano on 2 mm spacers"
+  ],
+  "halves": {
+    "left": {
+      "pcb_file": "/home/user/zmk-driver-paw3222/keyboard/pcb/output/tsumugi_left.kicad_pcb",
+      "case_dims_mm": {
+        "x": 144.8,
+        "y": 101.9,
+        "z": 32.0
+      },
+      "case_max_height_mm": 32.0,
+      "assembly_max_height_mm (ball top)": 34.4,
+      "keycap_top_max_mm": 32.2,
+      "case_min_z_mm": 0.0,
+      "ball_centre_desk_mm": [
+        113.44,
+        -167.62,
+        21.92
+      ],
+      "pod_min_clearance_to_desk_mm": {
+        "sensor_board_bottom": 2.42,
+        "module_screw_heads": 1.12
+      },
+      "cup_bottom_to_module_top_mm": 4.7,
+      "insert_hole_bottom_min_z_mm": 6.1,
+      "battery": {
+        "model": "803040",
+        "size_mm": [
+          8.0,
+          30.0,
+          40.0
+        ],
+        "typical_mAh": 1000,
+        "pocket_mm": [
+          31.0,
+          41.0,
+          8.5
+        ],
+        "pocket_centre_pcb_kicad": [
+          193.33,
+          120.62
+        ],
+        "floor_below_pocket_min_mm": 8.79
+      },
+      "magnets_y_zdesk_mm": [
+        [
+          126.77,
+          13.15
+        ],
+        [
+          107.47,
+          13.15
+        ]
+      ],
+      "inner_face_x_desk_mm": 143.472,
+      "volumes_cm3": {
+        "case": 100.54,
+        "mcu_cover": 3.49
+      },
+      "pla_mass_g_solid": {
+        "case": 124.7,
+        "mcu_cover": 4.3
+      },
+      "watertight": {
+        "case": true,
+        "mcu_cover": true
+      }
+    },
+    "right": {
+      "pcb_file": "/home/user/zmk-driver-paw3222/keyboard/pcb/output/tsumugi_right.kicad_pcb",
+      "case_dims_mm": {
+        "x": 144.8,
+        "y": 101.9,
+        "z": 32.0
+      },
+      "case_max_height_mm": 32.0,
+      "assembly_max_height_mm (ball top)": 34.4,
+      "keycap_top_max_mm": 32.2,
+      "case_min_z_mm": 0.0,
+      "ball_centre_desk_mm": [
+        -113.44,
+        -167.62,
+        21.92
+      ],
+      "pod_min_clearance_to_desk_mm": {
+        "sensor_board_bottom": 2.42,
+        "module_screw_heads": 1.12
+      },
+      "cup_bottom_to_module_top_mm": 4.7,
+      "insert_hole_bottom_min_z_mm": 6.09,
+      "battery": {
+        "model": "803040",
+        "size_mm": [
+          8.0,
+          30.0,
+          40.0
+        ],
+        "typical_mAh": 1000,
+        "pocket_mm": [
+          31.0,
+          41.0,
+          8.5
+        ],
+        "pocket_centre_pcb_kicad": [
+          290.33,
+          120.62
+        ],
+        "floor_below_pocket_min_mm": 8.79
+      },
+      "magnets_y_zdesk_mm": [
+        [
+          126.79,
+          13.15
+        ],
+        [
+          107.48,
+          13.15
+        ]
+      ],
+      "inner_face_x_desk_mm": -143.471,
+      "volumes_cm3": {
+        "case": 99.32,
+        "mcu_cover": 3.53
+      },
+      "pla_mass_g_solid": {
+        "case": 123.2,
+        "mcu_cover": 4.4
+      },
+      "watertight": {
+        "case": true,
+        "mcu_cover": true
+      }
+    }
+  }
+}
