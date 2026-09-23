@@ -44,8 +44,8 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Point, Polygon, box
 from shapely.ops import unary_union
 
-from build123d import (Box, Cylinder, Face, Location, Part, Pos, Rot, Sphere,
-                       Vector, Wire, export_step, export_stl, extrude)
+from build123d import (Align, Box, Cone, Cylinder, Face, Location, Part, Pos, Rot,
+                       Sphere, Vector, Wire, export_step, export_stl, extrude)
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -68,14 +68,24 @@ WALL_T = 2.2                # tray wall thickness
 WALL_CLEAR = 0.5            # gap PCB edge -> wall
 WALL_TOP = 2.5              # wall top (below keycaps, which start at +5.6)
 
-TENT_DEG_MIN = 8.0          # requested tent; raised automatically in TENT_STEP
-TENT_STEP = 0.5             #   steps until the sensor module clears the desk
-POD_MIN_CLEAR = 1.0         #   by at least this much (incl. screw heads)
+TENT_DEG_MIN = 8.0          # requested tent (lower bound of the search)
+TENT_STEP = 0.5             # minimum tent is rounded UP to this step
+TENT_RES = 0.1              # resolution of the exact minimum-tent search
+POD_MIN_CLEAR = 1.0         # sensor module + screw heads must clear the desk by this
+# "Detents": the tent is fixed by the printed wedge, so users print the angle
+# they want (our answer to Kobito-key's adjustable tenting).  The minimum per
+# ball size is computed, the others are fixed.
+TENT_DETENTS = (14.0, 18.0)
 
 # Trackball / pod
+BALL_SIZES = (25.0, 19.0)  # supported trackballs (Kobito-key style 19 mm or 25 mm)
+BALL_DEFAULT = 25.0
+BALL_TOP_ABOVE_KEYS = 2.0   # ball top this much above the keycap tops (+8.0)
+CUP_AIR = 0.7               # cup inner radius = ball radius + CUP_AIR
+# active ball variant - set by set_ball(); defaults = 25 mm ball
 BALL_D = 25.0
 BALL_Z = -2.5               # ball centre (PCB frame): top at +10.0
-CUP_R = 13.2                # cup inner radius (0.7 mm air around the ball)
+CUP_R = 13.2                # cup inner radius
 BEARING_D = 3.0             # static support balls (Si3N4 / ZrO2)
 BEARING_SEAT_D = 3.05       # spherical press-fit seat
 BEARING_ELEV = -35.0        # contact angle below the ball equator (PCB frame)
@@ -86,9 +96,35 @@ LENS_H = 3.0                # lens height above the module board
 MODULE_W = 21.0             # sensor module board (square)
 MODULE_T = 1.6
 MODULE_CLEAR = 0.3          # per side in the pocket
-MODULE_SCREWS = ((-8.0, -8.0), (8.0, 8.0))   # M2 holes on the module (local)
+MODULE_SCREWS = ((-8.5, 0.0), (8.5, 0.0))    # M2 holes on the module (local, desk x); keeps clear of the lid bores
 SCREW_HEAD_H = 1.3          # M2 pan/button head height (below the module)
-WIRE_CH_W, WIRE_CH_R0, WIRE_CH_R1 = 4.0, 10.5, 14.2   # wire channel to the tray
+WIRE_CH_W = 4.0             # wire channel pod -> tray; radial span CUP_R-2.7 .. CUP_R+1.0
+WIRE_CH_R0, WIRE_CH_R1 = 10.5, 14.2
+
+# Bay lids (trackpad / encoder / blank) - drop into the 28 mm PCB hole
+BAY_HOLE_R = 14.0           # PCB cut-out radius
+LID_R = 13.7                # lid body radius (0.3 radial clearance in the PCB hole)
+LID_CONE_CLEAR = 0.4        # 45 deg cone underside vs the cup rim / cup sphere
+LID_LEG_R = 3.2             # 2 legs, keyed into 2 landing bores in the pod
+LID_BORE_R = 3.5
+LID_LEG_AZ = (120.0, 240.0) # azimuths (PCB frame, same on both halves), clear of the bearings
+LID_MAG_D, LID_MAG_T = 5.1, 2.1   # pockets for 5 x 2 mm disc magnets (lid leg + pod landing)
+LID_MAG_FLOOR = 0.8         # material kept under the pod magnet pocket
+PAD_D_WANTED = 35.0         # Cirque TM035035
+PAD_D_FALLBACK = 23.0       # Cirque TM023023
+PAD_T = 3.0                 # 1.8 mm overlay + board
+PAD_BEZEL = 0.8             # printed ring around the pad
+PAD_KEY_CLEAR = 0.5         # plan-view clearance pad bezel -> keycap
+FPC_SLOT = (12.0, 3.0)
+BLANK_TOP_Z = 0.0           # blank lid flush with the PCB top
+ENC_BODY = 12.0             # EC11 body (square) ...
+ENC_BODY_H = 6.5            # ... height below the mounting surface
+ENC_SHAFT_L = 15.0          # shaft length from the mounting surface (EC11E 15 mm)
+ENC_KNOB_TOP_EXTRA = 1.0    # knob top above the shaft end
+ENC_PANEL_T = 2.0
+ENC_HOLE_D = 7.0            # M7 bushing
+ENC_TAB = (1.4, 2.6, 7.0)   # anti-rotation slot (w, l, offset from the shaft) - check datasheet
+ENC_KNOB_D = 18.0
 
 # Heat-set inserts (M2)
 INSERT_BOSS_D = 5.5
@@ -294,6 +330,34 @@ def union_all(parts):
 # ---------------------------------------------------------------------------
 # Tent angle: raise it until the sensor module (+ screw heads) clears the desk
 # ---------------------------------------------------------------------------
+def set_ball(d: float):
+    """Select the active trackball variant (updates the ball-dependent globals)."""
+    global BALL_D, BALL_Z, CUP_R, WIRE_CH_R0, WIRE_CH_R1
+    BALL_D = d
+    BALL_Z = KEYCAP_Z1 + BALL_TOP_ABOVE_KEYS - d / 2      # 25 -> -2.5, 19 -> +0.5
+    CUP_R = d / 2 + CUP_AIR
+    WIRE_CH_R0, WIRE_CH_R1 = CUP_R - 2.7, CUP_R + 1.0
+
+
+def cup_z(r):
+    """Lower cup surface height (PCB frame) at radius r from the ball axis."""
+    return BALL_Z - math.sqrt(max(CUP_R ** 2 - r ** 2, 0.0))
+
+
+def cup_rim_r():
+    return math.sqrt(CUP_R ** 2 - (FLOOR_TOP - BALL_Z) ** 2)
+
+
+def lid_landing():
+    """Leg radius and landing height of the lid legs in the pod."""
+    # legs as far out as the PCB hole allows (same for every ball size); the
+    # landing floor sits where the cup surface passes the inner edge of the
+    # magnet ring, so the magnet pocket and a LID_MAG_FLOOR ring are in solid
+    r_leg = LID_R - LID_LEG_R
+    z_land = cup_z(r_leg - LID_MAG_D / 2 - LID_MAG_FLOOR)
+    return r_leg, z_land
+
+
 def module_depths():
     """Distances below the ball centre (along the sensor axis)."""
     top = BALL_D / 2 + LENS_GAP + LENS_H          # module board top surface
@@ -308,11 +372,13 @@ def pod_clearance(h, tent):
 
 
 def choose_tent(halves):
-    t = TENT_DEG_MIN
-    while t < 25:
+    """Exact minimum tent (TENT_RES) and the value rounded up to TENT_STEP."""
+    t = 0.0
+    while t < 30:
         if all(pod_clearance(h, t)[1] >= POD_MIN_CLEAR for h in halves):
-            return t
-        t += TENT_STEP
+            exact = t
+            return exact, math.ceil(exact / TENT_STEP - 1e-9) * TENT_STEP
+        t = round(t + TENT_RES, 3)
     raise RuntimeError("no tent angle found")
 
 
@@ -385,7 +451,7 @@ def build_half(h: dict, tent: float) -> dict:
     dz = fr.desk_z_axis_in_pcb()
     shift = -dz[0] / dz[2] * (m_top + 2)          # xy drift of the axis at module depth
     pod_keep = unary_union([
-        Point(bx, by).buffer(CUP_R + FLOOR_T + 0.5),
+        Point(bx, by).buffer(max(CUP_R + FLOOR_T + 0.5, lid_landing()[0] + LID_BORE_R + FLOOR_T)),
         rect(bx, by, MODULE_W + 2 * MODULE_CLEAR + 2 * FLOOR_T, MODULE_W + 2 * MODULE_CLEAR + 2 * FLOOR_T),
         rect(bx + shift, by, MODULE_W + 2 * MODULE_CLEAR + 2 * FLOOR_T, MODULE_W + 2 * MODULE_CLEAR + 2 * FLOOR_T),
     ]).convex_hull
@@ -483,6 +549,12 @@ def build_half(h: dict, tent: float) -> dict:
              BALL_Z + rb * math.sin(e))
         bearings.append(p)
         cut.append(Pos(*p) * Sphere(BEARING_SEAT_D / 2))
+    # bay-lid landings: 2 keyed bores with a magnet pocket at the bottom
+    r_leg, z_land = lid_landing()
+    for a in LID_LEG_AZ:
+        lx, ly = bx + r_leg * math.cos(math.radians(a)), by + r_leg * math.sin(math.radians(a))
+        cut.append(Pos(lx, ly, (z_land + FLOOR_TOP + 1) / 2) * Cylinder(LID_BORE_R, FLOOR_TOP + 1 - z_land))
+        cut.append(Pos(lx, ly, z_land - LID_MAG_T / 2 + 0.05) * Cylinder(LID_MAG_D / 2, LID_MAG_T + 0.1))
     case = case - fr.T(union_all(cut))
 
     # ---- desk-frame cuts: sensor window, module pocket, inserts, channel ---
@@ -499,8 +571,11 @@ def build_half(h: dict, tent: float) -> dict:
     az = math.atan2(j_d[1] - Cy, j_d[0] - Cx)
     # rotate the channel away from the bearings if needed
     bearing_az_d = [math.atan2(fr.to_desk(*b)[1] - Cy, fr.to_desk(*b)[0] - Cx) for b in bearings]
-    while min(abs((az - b + math.pi) % (2 * math.pi) - math.pi) for b in bearing_az_d) < math.radians(25):
-        az += math.radians(5)
+    # keep >= 25 deg from the bearings and >= 34 deg from the lid landing bores
+    avoid = [(b, 25.0) for b in bearing_az_d] + [(math.radians(a), 34.0) for a in LID_LEG_AZ]
+    angd = lambda x, y: abs((x - y + math.pi) % (2 * math.pi) - math.pi)
+    while any(angd(az, b) < math.radians(m) for b, m in avoid):
+        az += math.radians(1)
     rc = (WIRE_CH_R0 + WIRE_CH_R1) / 2
     ch_z0, ch_z1 = z_mtop - 0.5, Cz + 4.0
     chan = Pos(Cx + rc * math.cos(az), Cy + rc * math.sin(az), (ch_z0 + ch_z1) / 2) * \
@@ -634,50 +709,220 @@ def write_stl(shape, path: Path, tol=STL_TOL, ang=STL_ANG):
     return m
 
 
+# ---------------------------------------------------------------------------
+# Bay lids (trackpad / encoder / blank)
+# ---------------------------------------------------------------------------
+def pad_fit(halves):
+    """Largest Cirque pad that clears the neighbouring keycaps in plan view."""
+    d_key = min(rect(x, y, KEYCAP_W, KEYCAP_H, r).distance(Point(*h["ball"]))
+                for h in halves for x, y, r in h["keys"])
+    max_r = d_key - PAD_KEY_CLEAR - PAD_BEZEL
+    want_r = PAD_D_WANTED / 2
+    pad_d = PAD_D_WANTED if want_r <= max_r else PAD_D_FALLBACK
+    return dict(nearest_keycap_mm=d_key, max_pad_d=2 * max_r,
+                pad_wanted_overlap_mm=max(0.0, want_r + PAD_BEZEL + PAD_KEY_CLEAR - d_key),
+                pad_wanted_edge_overlap_mm=max(0.0, want_r - d_key),
+                pad_d=pad_d, lid_to_keycap_mm=d_key - LID_R)
+
+
+def lid_body(z_top):
+    """Common lid body (PCB frame, axis = PCB normal through the bay centre):
+    45 deg cone that clears the cup + cylinder in the PCB hole + 2 keyed legs
+    with magnet pockets.  Prints upright on the leg / cone bottoms."""
+    r_leg, z_land = lid_landing()
+    r0 = cup_rim_r() - LID_CONE_CLEAR            # cone radius at the floor level
+    z_full = FLOOR_TOP + (LID_R - r0)            # cone reaches LID_R here
+    z = FLOOR_TOP
+    while z - 0.05 >= z_land:                   # go down while the cone clears the sphere
+        zn = z - 0.05
+        rc = r0 + (zn - FLOOR_TOP)
+        rs = math.sqrt(max(CUP_R ** 2 - (zn - BALL_Z) ** 2, 0.0))
+        if rc < 2.0 or rc > rs - LID_CONE_CLEAR:
+            break
+        z = zn
+    if z - z_land < 0.5:                        # snap to the leg plane: one flat bed face
+        z = z_land
+    z_cb, r_cb = z, r0 + (z - FLOOR_TOP)
+    top = max(z_top, z_full) + 1.0
+    # 45 deg cone continued upwards, clipped by the lid cylinder (clean edge at z_full)
+    body = Pos(0, 0, z_cb) * Cone(r_cb, r_cb + (top - z_cb), top - z_cb, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    body = body & (Pos(0, 0, z_cb - 1) * Cylinder(LID_R, top - z_cb + 2, align=(Align.CENTER, Align.CENTER, Align.MIN)))
+    leg_top = min(-PCB_T - 0.4, z_top)
+    for a in LID_LEG_AZ:
+        lx, ly = r_leg * math.cos(math.radians(a)), r_leg * math.sin(math.radians(a))
+        body = body + Pos(lx, ly, z_land) * Cylinder(LID_LEG_R, leg_top - z_land, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    body = body & (Pos(0, 0, z_top - 500) * Box(200, 200, 1000))
+    for a in LID_LEG_AZ:
+        lx, ly = r_leg * math.cos(math.radians(a)), r_leg * math.sin(math.radians(a))
+        body = body - Pos(lx, ly, z_land - 0.1) * Cylinder(LID_MAG_D / 2, LID_MAG_T + 0.1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    return body, dict(z_land=z_land, r_leg=r_leg, cone_bottom_z=z_cb, cone_bottom_r=r_cb, z_top=z_top)
+
+
+def build_lids(pad_d):
+    lids, vis, info = {}, {}, {}
+    # (a) trackpad: pad glass flush with the keycap tops
+    z_top = KEYCAP_Z1
+    pr = pad_d / 2
+    body, inf = lid_body(z_top)
+    if pr + PAD_BEZEL > LID_R:                  # mushroom head (only for a big pad)
+        hr = pr + PAD_BEZEL
+        zh = z_top - PAD_T - 1.6
+        body = body + Pos(0, 0, zh - (hr - LID_R)) * Cone(LID_R, hr, hr - LID_R, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        body = body + Pos(0, 0, zh) * Cylinder(hr, z_top - zh, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    body = body - Pos(0, 0, z_top - PAD_T) * Cylinder(pr + 0.25, PAD_T + 1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    body = body - Pos(0, 0, inf["z_land"] - 1) * Box(FPC_SLOT[0], FPC_SLOT[1], z_top - inf["z_land"] + 2, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    lids["trackpad"] = body
+    vis["trackpad"] = [Pos(0, 0, z_top - PAD_T) * Cylinder(pr, PAD_T, align=(Align.CENTER, Align.CENTER, Align.MIN))]
+    info["trackpad"] = dict(inf, pad_d=pad_d, pad_top_z=z_top)
+
+    # (b) EC11 encoder: body hangs into the cup, knob top ~ keycap height
+    r_diag = ENC_BODY / 2 * math.sqrt(2) + 0.3
+    z_bb = BALL_Z - math.sqrt(max(CUP_R ** 2 - r_diag ** 2, 0.0))
+    pb = max(z_bb + ENC_BODY_H, KEYCAP_Z1 - ENC_SHAFT_L - ENC_KNOB_TOP_EXTRA)
+    pt = pb + ENC_PANEL_T
+    z_top = max(pt, 0.0)
+    body, inf = lid_body(z_top)
+    if z_top > pt:                              # dish above the panel for the knob
+        body = body - Pos(0, 0, pt) * Cylinder(LID_R - 1.6, z_top - pt + 1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    cav = ENC_BODY + 0.4
+    body = body - Pos(0, 0, inf["z_land"] - 1) * Rot(0, 0, 45) * Box(cav, cav, pb - inf["z_land"] + 1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    body = body - Pos(0, 0, pb - 1) * Cylinder(ENC_HOLE_D / 2, ENC_PANEL_T + 2, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    tw, tl, toff = ENC_TAB
+    body = body - Pos(toff * math.cos(math.radians(45)), toff * math.sin(math.radians(45)), pb - 1) * Rot(0, 0, 45) * \
+        Box(tl, tw, ENC_PANEL_T + 2, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    lids["encoder"] = body
+    knob_top = pb + ENC_SHAFT_L + ENC_KNOB_TOP_EXTRA
+    vis["encoder"] = [
+        Pos(0, 0, pb - ENC_BODY_H) * Rot(0, 0, 45) * Box(ENC_BODY, ENC_BODY, ENC_BODY_H, align=(Align.CENTER, Align.CENTER, Align.MIN)),
+        Pos(0, 0, pt) * Cylinder(3.4, 5.0, align=(Align.CENTER, Align.CENTER, Align.MIN)),
+        Pos(0, 0, max(pt + 1.0, knob_top - 12.0)) * Cylinder(ENC_KNOB_D / 2, knob_top - max(pt + 1.0, knob_top - 12.0), align=(Align.CENTER, Align.CENTER, Align.MIN)),
+    ]
+    info["encoder"] = dict(inf, panel_top_z=pt, body_bottom_z=pb - ENC_BODY_H, knob_top_z=knob_top,
+                           knob_above_keycaps=knob_top - KEYCAP_Z1)
+
+    # (c) blank
+    body, inf = lid_body(BLANK_TOP_Z)
+    lids["blank"] = body
+    vis["blank"] = []
+    info["blank"] = inf
+    return lids, vis, info
+
+
+def lid_print(shape):
+    """Upright print orientation: lowest point on the bed."""
+    bb = shape.bounding_box()
+    return Pos(-(bb.min.X + bb.max.X) / 2, -(bb.min.Y + bb.max.Y) / 2, -bb.min.Z) * shape
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+def fmt_t(t):
+    return f"{t:g}"
+
+
 def main():
+    import trimesh
     OUT.mkdir(parents=True, exist_ok=True)
     SCRATCH.mkdir(parents=True, exist_ok=True)
     halves = [load_half("left"), load_half("right")]
-    tent = choose_tent(halves)
-    print(f"tent angle: {tent} deg (requested {TENT_DEG_MIN})")
+    variants, defaults = {}, {}
+    fit = pad_fit(halves)
+    lid_report = {"pad": {k: round(v, 2) for k, v in fit.items()}, "sets": {}}
+    for bd in BALL_SIZES:
+        set_ball(bd)
+        exact, tmin = choose_tent(halves)
+        angles = [tmin] + [t for t in TENT_DETENTS if t > tmin]
+        vrep = {"min_tent_exact_deg": exact, "min_tent_deg": tmin, "ball_centre_z_pcb": BALL_Z,
+                "cup_r": CUP_R, "ring_gap_pcb_top_mm": round(BAY_HOLE_R - math.sqrt(max((BALL_D / 2) ** 2 - BALL_Z ** 2, 0)), 2),
+                "ring_gap_equator_mm": round(BAY_HOLE_R - BALL_D / 2, 2), "detents": {}}
+        print(f"ball {bd:g}: min tent {exact:.1f} -> {tmin} deg; detents {angles}", flush=True)
+        for t in angles:
+            dv = {}
+            for h in halves:
+                side = h["side"]
+                r = build_half(h, t)
+                name = f"case_{side}_b{bd:g}_t{fmt_t(t)}.stl"
+                m = write_stl(r["case"], OUT / name)
+                info = r["info"]
+                dv[side] = {"file": name, "watertight": bool(m.is_watertight),
+                            "min_z": round(float(m.bounds[0][2]), 3),
+                            "max_height_mm": round(float(m.bounds[1][2]), 1),
+                            "ball_top_mm": round(info["ball_desk"][2] + BALL_D / 2, 1),
+                            "volume_cm3": round(m.volume / 1000, 2),
+                            "pla_mass_g_solid": round(m.volume / 1000 * PLA_DENSITY, 1),
+                            "pod_clear_board_mm": round(info["pod_clear_board"], 2),
+                            "pod_clear_screws_mm": round(info["pod_clear_screws"], 2),
+                            "battery": info["battery"]["name"]}
+                print(f"  t={t}: {side} wt={m.is_watertight} vol={m.volume / 1000:.1f}", flush=True)
+                if bd == BALL_DEFAULT and t == tmin:
+                    defaults[side] = (h, r, t)
+            vrep["detents"][fmt_t(t)] = dv
+        variants[f"b{bd:g}"] = vrep
+
+        # lids for this ball size (one set fits both halves)
+        lids, lvis, linfo = build_lids(fit["pad_d"])
+        lset = {}
+        for k, shp in lids.items():
+            name = f"lid_{k}_b{bd:g}.stl"
+            m = write_stl(lid_print(shp), OUT / name)
+            lset[k] = {"file": name, "watertight": bool(m.is_watertight),
+                       "volume_cm3": round(m.volume / 1000, 2),
+                       **{kk: (round(v, 2) if isinstance(v, float) else v) for kk, v in linfo[k].items()}}
+            if bd == BALL_DEFAULT:
+                # scratch meshes for renders: lids in their own frame, and on the left half
+                export_stl(shp, str(SCRATCH / f"r_lid_{k}.stl"), tolerance=0.03, angular_tolerance=0.15)
+                if lvis[k]:
+                    export_stl(union_all(lvis[k]), str(SCRATCH / f"r_lidvis_{k}.stl"), tolerance=0.03, angular_tolerance=0.15)
+        lid_report["sets"][f"b{bd:g}"] = lset
+        if bd == BALL_DEFAULT:
+            defaults["lids"] = (lids, lvis)
+
+    # ---- defaults: b25 at its minimum tent (STEP + cover + render meshes) --
+    set_ball(BALL_DEFAULT)
     results = {}
-    for h in halves:
-        side = h["side"]
-        print(f"building {side} ...", flush=True)
-        r = build_half(h, tent)
+    for side in ("left", "right"):
+        h, r, t = defaults[side]
         results[side] = r
         export_step(r["case"], str(OUT / f"case_{side}.step"))
         write_stl(r["case"], OUT / f"case_{side}.stl")
         write_stl(r["cover_print"], OUT / f"mcu_cover_{side}.stl")
         export_step(r["cover_print"], str(OUT / f"mcu_cover_{side}.step"))
-        # render helpers (scratch)
         write_stl(r["case"], SCRATCH / f"r_case_{side}.stl", 0.08, 0.3)
         for k, v in r["vis"].items():
             fine = k in ("ball", "bearings")
             export_stl(v, str(SCRATCH / f"r_{k}_{side}.stl"), tolerance=0.01 if fine else 0.08,
                        angular_tolerance=0.08 if fine else 0.3)
-        print(f"  {side}: case volume {r['case'].volume / 1000:.1f} cm3", flush=True)
-
+        # trackpad lid installed (desk frame)
+        lids, lvis = defaults["lids"]
+        bx, by = h["ball"]
+        fr = r["frame"]
+        export_stl(fr.T(Pos(bx, by, 0) * lids["trackpad"]), str(SCRATCH / f"r_lidtp_{side}.stl"), tolerance=0.05, angular_tolerance=0.2)
+        export_stl(fr.T(Pos(bx, by, 0) * union_all(lvis["trackpad"])), str(SCRATCH / f"r_pad_{side}.stl"), tolerance=0.05, angular_tolerance=0.2)
+    tent = defaults["left"][2]
     report = build_report(halves, results, tent)
-    (OUT / "case_report.json").write_text(json.dumps(report, indent=2))
+    report["variants"] = variants
+    report["lids"] = lid_report
+    (OUT / "case_report.json").write_text(json.dumps(report, indent=2, default=float))
     (SCRATCH / "layout.json").write_text(json.dumps(
-        {s: {k: v for k, v in results[s]["info"].items() if k != "battery"} | {"battery": results[s]["info"]["battery"]}
-         for s in results}, indent=2, default=float))
-    print(json.dumps(report, indent=2))
+        {s: results[s]["info"] for s in results}, indent=2, default=float))
+    print(json.dumps({"variants": variants, "lids": lid_report}, indent=1, default=float)[:4000])
 
 
 def build_report(halves, results, tent):
     import trimesh
-    rep = {"tent_deg": tent, "tent_deg_requested": TENT_DEG_MIN,
+    rep = {"tent_deg": tent, "tent_deg_requested": TENT_DEG_MIN, "ball_d": BALL_DEFAULT,
+           "default_files": "case_{left,right}.stl/.step = b25 at its minimum tent",
            "frame": "desk frame, z=0 is the desk / print bed",
            "density_g_cm3": PLA_DENSITY,
            "mass_note": "solid-model mass (100 % infill); a 4-wall / 20 % infill print is roughly 55-65 % of it",
            "notes": [
-               f"tent raised from {TENT_DEG_MIN} to {tent} deg so the sensor module and its screw heads clear the desk by >= {POD_MIN_CLEAR} mm",
+               f"default tent raised from {TENT_DEG_MIN} to {tent} deg so the sensor module and its screw heads clear the desk by >= {POD_MIN_CLEAR} mm",
                "sensor axis is desk-vertical (tent angle off the PCB normal) so the module pocket ceiling prints as a flat bridge; lens gap unchanged",
                "sensor module pocket is open to the underside (module is screwed up into 2 M2 heat-set inserts)",
                "light-weighting = open-top wells under the tray floor (rib grid), printable without supports",
                "MCU cover plate underside at z=+5.6 (PCB frame) for both halves: clears the right nice!nano on 2 mm spacers",
+               "the pod has 2 keyed landing bores (+ 5x2 magnet pockets) at 120/240 deg for the bay lids",
            ],
            "halves": {}}
     for h in halves:

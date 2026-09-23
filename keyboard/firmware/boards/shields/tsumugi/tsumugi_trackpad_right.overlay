@@ -1,4 +1,4 @@
-/* Add-on: 35 mm Cirque trackpad in the RIGHT (central) bay -> main cursor (tap = click). */
+/* Add-on: 23 mm Cirque trackpad in the RIGHT (central) bay -> main cursor (tap = click). */
 &i2c0 {
     status = "okay";
 };

@@ -26,7 +26,7 @@ REPORT = json.loads((OUT / "case_report.json").read_text())
 COL = {
     "case": "#c3c7cd", "cover": "#9aa1ab", "pcb": "#2e5e4e", "keycaps": "#f1efe8",
     "ball": "#a23b35", "mcu": "#2b2f36", "bearings": "#e0e0e0", "module": "#3d6fa3",
-    "battery": "#c9a64a",
+    "battery": "#c9a64a", "lid": "#d9d4c7", "lidtp": "#d9d4c7", "pad": "#30343b", "lidvis": "#4a4f57",
 }
 PARTS_3D = ["case", "pcb", "keycaps", "ball", "mcu", "cover"]
 
@@ -239,6 +239,22 @@ def main():
           "Magnetically joined 'Λ' unibody (front view)")
     ms = scene([("left", (0, 0, 0)), ("right", (join, 0, 0))])
     fig3d(ms, OUT / "render_unibody_iso.png", 30, -55, zoom=0.95, title="Joined unibody - isometric")
+    # (e) the three bay lids (b25 set) with their parts, and (f) a half with the trackpad lid
+    ms = []
+    for i, k in enumerate(["trackpad", "encoder", "blank"]):
+        m = trimesh.load(SCRATCH / f"r_lid_{k}.stl")
+        m.apply_translation((0, -i * 40.0, 0))
+        ms.append((m, COL["lid"]))
+        f = SCRATCH / f"r_lidvis_{k}.stl"
+        if f.exists():
+            v = trimesh.load(f)
+            v.apply_translation((0, -i * 40.0, 0))
+            ms.append((v, COL["pad"] if k == "trackpad" else COL["lidvis"]))
+    fig3d(ms, OUT / "render_lids.png", 18, 200, zoom=0.95,
+          title="Bay lids: Cirque 23 mm trackpad | EC11 encoder | blank  (2 keyed legs with 5x2 magnets)")
+    ms = scene([("left", (0, 0, 0))], parts=["case", "pcb", "keycaps", "mcu", "cover", "lidtp", "pad"])
+    fig3d(ms, OUT / "render_trackpad_half.png", 38, -70, zoom=0.95,
+          title="Left half with the trackpad lid (pad flush with the keycap tops)")
     # (c) section through the ball centre
     section_figure("left", OUT / "render_section_ball.png")
     # (d) bare case, top and bottom

@@ -163,7 +163,7 @@
     };
 };
 
-/* module bay: Cirque Pinnacle 35 mm trackpad (TM035035) on I2C, DR on the MOTION pin */
+/* module bay: Cirque Pinnacle 35 mm trackpad (TM023023) on I2C, DR on the MOTION pin */
 &i2c0 {
     compatible = "nordic,nrf-twim";
     pinctrl-0 = <&i2c0_default>;

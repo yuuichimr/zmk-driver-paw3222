@@ -3,7 +3,7 @@
 #
 #  right  = BLE central, 25 mm cursor ball in the bay (default)
 #  left   = peripheral; pick ONE file to match what sits in the left bay
-#  bay modules: 25/19 mm ball (PAW3222) | 35 mm Cirque trackpad | EC11 encoder | blank
+#  bay modules: 25/19 mm ball (PAW3222) | 23 mm Cirque trackpad | EC11 encoder | blank
 ---
 include:
   - board: nice_nano//zmk
@@ -30,7 +30,7 @@ include:
   - board: nice_nano//zmk
     shield: settings_reset
     artifact-name: settings_reset
-  # trackpad (35 mm Cirque TM035035) in the bay instead of a ball
+  # trackpad (23 mm Cirque TM023023) in the bay instead of a ball
   - board: nice_nano//zmk
     shield: tsumugi_right tsumugi_trackpad_right
     snippet: studio-rpc-usb-uart
