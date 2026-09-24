@@ -1,13 +1,13 @@
 # Tsumugi（紡）— ロープロファイル無線分割トラックボールキーボード
 
 > **紡（つむぎ）**: 左右ふたつの手を、ひとつのキーボードへ「紡ぐ」。
-> 分割にも一体型にもなり、ボール・エンコーダー・ブランクを自由に差し替えられる。
+> 分割にも一体型にもなり、ボール・トラックパッド・エンコーダー・ブランクを自由に差し替えられる。
 
 ![render](case/output/render_unibody_iso.png)
 
 ![layout](pcb/output/layout_preview.png)
 
-Tsumugi は、moNa2 / roBa / Keyball44 / 双掌（SO-SHO）/ torabo-tsuki など、
+Tsumugi は、moNa2 / roBa / Keyball44 / 小人キー / 双掌（SO-SHO）/ Toucan / torabo-tsuki など、
 いま手に入る「トラックボール付き分割キーボード」の良いところを整理し、
 それぞれの弱点をまとめて解消することを目標に設計した **オープンソースの分割キーボード** です。
 PCB・ケース・ファームウェア・キーマップ・製造データまで、すべてこのディレクトリから再生成できます。
@@ -23,7 +23,7 @@ PCB・ケース・ファームウェア・キーマップ・製造データま�
 | | moNa2 | roBa | Keyball44 | 小人キー | 双掌 SO-SHO | Toucan | torabo-tsuki LP | **Tsumugi** |
 |---|---|---|---|---|---|---|---|---|
 | キー数 | 42 | 42 | 44（MX） | 40 | 44 | 42 | S/M/L | **42 + ベイ押下 2** |
-| ポインタ | 25mm ボール 右 | 34mm ボール | 34mm ボール | **19mm ボール 左右** | 34mm ボール/パッド | 40mm トラックパッド | 19/25mm ボール | **25/19mm ボール・35mm パッド、左右どちらにも** |
+| ポインタ | 25mm ボール 右 | 34mm ボール | 34mm ボール | **19mm ボール 左右** | 34mm ボール/パッド | 40mm トラックパッド | 19/25mm ボール | **25/19mm ボール・23mm パッド、左右どちらにも** |
 | ピッチ | 17mm | — | 19mm | **16mm** | — | 17mm | — | 18 × 17mm（Choc 標準キャップ） |
 | 無線 | ZMK | ZMK | 有線 | ZMK | 無線 | ZMK | ZMK・乾電池 | **ZMK・LiPo 約1000mAh** |
 | モジュール交換 | — | — | — | — | ◯ ボール/パッド/カバー | — | ボール位置調整 | **ボール / パッド / EC11 / ブランク** |
@@ -154,7 +154,7 @@ ZMK_APP=/path/to/zmk/app EXTRA_MODULES=/path/to/zmk-rgbled-widget keyboard/tools
 親指の `LANG2`/`LANG1` は英数/かな（タップ）、ホールドでレイヤー。
 
 > センサーの取り付け向きで X/Y の向きが変わります。実機で逆になったら
-> `firmware/config/tsumugi.keymap` の `&trackball_listener` に
+> `firmware/config/tsumugi.keymap` の `&cursor_listener` に
 > `<&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>` などを追加してください。
 
 ## 6. PCB
